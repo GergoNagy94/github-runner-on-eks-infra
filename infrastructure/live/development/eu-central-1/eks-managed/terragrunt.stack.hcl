@@ -53,7 +53,7 @@ unit "kms" {
 
   values = {
     description = "KMS key for EKS cluster encryption"
-    aliases     = ["alias/eks-cluster-encryption"]
+    aliases     = ["alias/eks-cluster-encryption-terragrunt"]
 
     key_administrators = [
       "arn:aws:iam::${local.development_account_id}:root",
@@ -203,82 +203,3 @@ unit "eks" {
     }
   }
 }
-
-unit "ebs_csi_driver" {
-  source = "../../../../../units/ebs-csi-driver"
-  path   = "ebs-csi-driver"
-
-  values = {
-    eks_path = "../eks"
-    kms_path = "../kms"
-
-    role_name                  = "ebs-csi-driver-role"
-    namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-
-    enable_kms_encryption = true
-
-    tags = {
-      Name        = "ebs-csi-driver-role"
-      Environment = "development"
-      Purpose     = "EBS-CSI-Driver"
-    }
-  }
-}
-
-unit "aws_load_balancer_controller" {
-  source = "../../../../../units/aws-lbc"
-  path   = "aws-load-balancer-controller"
-
-  values = {
-    eks_path = "../eks"
-
-    helm_chart_name         = "aws-load-balancer-controller"
-    helm_chart_release_name = "aws-load-balancer-controller"
-    helm_chart_repo         = "https://aws.github.io/eks-charts"
-    helm_chart_version      = "1.8.4"
-
-    namespace            = "kube-system"
-    service_account_name = "aws-load-balancer-controller"
-
-    irsa_role_name_prefix = "aws-load-balancer-controller"
-
-    # need vpc id?
-    helm_chart_values = [
-      <<-EOT
-      clusterName: ${local.project}-cluster
-      serviceAccount:
-        create: true
-        name: aws-load-balancer-controller
-      region: ${local.region}
-      EOT
-    ]
-
-    tags = {
-      Name        = "aws-load-balancer-controller"
-      Purpose     = "Load-Balancer-Controller"
-    }
-  }
-}
-
-unit "additional_iam_roles" {
-  source = "../../../../../units/iam-role"
-  path   = "additional-iam-roles"
-
-  values = {
-    eks_path = "../eks"
-
-    role_name = "external-dns-role"
-
-    namespace_service_accounts = ["kube-system:external-dns"]
-
-    attach_external_dns_policy = true
-
-    role_policy_arns = {}
-
-    tags = {
-      Name        = "external-dns-role"
-      Purpose     = "External-DNS"
-    }
-  }
-}
-
