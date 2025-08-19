@@ -10,16 +10,15 @@ locals {
   region          = local.env_vars.locals.region
 
   default_tags = {
-    createdBy       = "Terragrunt"
-    environment     = local.env
-    project         = local.project
-    project_version = local.project_version
+    Maintainer       = "Terragrunt"
+    Environment     = local.env
+    Project         = local.project
+    Project_version = local.project_version
   }
 
   s3_state_region = "eu-central-1"
 }
 
-/*
 remote_state {
   backend = "s3"
   generate = {
@@ -34,7 +33,6 @@ remote_state {
     dynamodb_table = "${local.project}-${local.env}-terraform-state-lock"
   }
 }
-*/
 
 generate "provider" {
   path      = "provider.tf"

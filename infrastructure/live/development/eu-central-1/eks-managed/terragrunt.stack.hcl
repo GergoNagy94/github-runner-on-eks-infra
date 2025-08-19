@@ -8,13 +8,6 @@ locals {
   development_account_email = "gergodevops@gmail.com"
   organization_id           = "o-0000000000"
   organization_root_id      = "r-0000"
-  
-  
-  tags = {
-    Project     = local.project
-    Environment = local.env
-    Maintainer   = "Terragrunt"
-  }
 }
 
 unit "vpc" {
@@ -25,7 +18,7 @@ unit "vpc" {
     name = "${local.project}-${local.env}-vpc"
     cidr = "10.0.0.0/16"
 
-    azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+    azs             = ["${local.region}a", "${local.region}b"]
     private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
     public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
@@ -46,8 +39,6 @@ unit "vpc" {
     
     tags = {
       Name        = "${local.project}-${local.env}-vpc"
-      Environment = "development"
-      Project     = "${local.project}"
       ManagedBy   = "Terragrunt"
     }
   }
@@ -73,7 +64,6 @@ unit "kms" {
 
     tags = {
       Name        = "eks-cluster-kms-key"
-      Environment = "development"
       Purpose     = "EKS-Encryption"
     }
   }
@@ -209,8 +199,6 @@ unit "eks" {
 
     tags = {
       Name        = "${local.project}-cluster"
-      Environment = "development"
-      ManagedBy   = "Terragrunt"
       EKSMode     = "Managed"
     }
   }
@@ -267,7 +255,6 @@ unit "aws_load_balancer_controller" {
 
     tags = {
       Name        = "aws-load-balancer-controller"
-      Environment = "development"
       Purpose     = "Load-Balancer-Controller"
     }
   }
@@ -290,7 +277,6 @@ unit "additional_iam_roles" {
 
     tags = {
       Name        = "external-dns-role"
-      Environment = "development"
       Purpose     = "External-DNS"
     }
   }
