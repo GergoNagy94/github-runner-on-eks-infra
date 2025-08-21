@@ -16,7 +16,7 @@ dependency "vpc" {
 }
 
 dependency "kms" {
-  config_path  = values.kms_path
+  config_path = values.kms_path
   mock_outputs = {
     key_arn = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
   }
@@ -47,6 +47,22 @@ inputs = {
 
   endpoint_public_access                   = values.endpoint_public_access
   enable_cluster_creator_admin_permissions = values.enable_cluster_creator_admin_permissions
+
+  access_entries = {
+    example = {
+      principal_arn = "arn:aws:iam::567749996660:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_6d73bc836f311973"
+
+      policy_associations = {
+        example = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            namespace = []
+            type      = "cluster"
+          }
+        }
+      }
+    }
+  }
 
   vpc_id                   = dependency.vpc.outputs.vpc_id
   subnet_ids               = dependency.vpc.outputs.private_subnets

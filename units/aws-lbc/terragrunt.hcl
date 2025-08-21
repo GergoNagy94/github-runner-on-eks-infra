@@ -60,11 +60,6 @@ inputs = {
   version    = "1.8.1"
   namespace  = "kube-system"
 
-  repository_opts = {
-    username = null
-    password = null
-  }
-
   set = [
     {
       name  = "clusterName"
