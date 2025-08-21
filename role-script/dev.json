@@ -1,0 +1,193 @@
+{
+  "account_id": "567749996660",
+  "name": "dev",
+  "policies": {
+    "trust": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": [
+              "arn:aws:iam::${account_id}:root"
+            ],
+            "Service": "vpc-flow-logs.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "inline": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "acm:RequestCertificate",
+            "acm:AddTagsToCertificate",
+            "acm:DescribeCertificate",
+            "acm:ListTagsForCertificate",
+            "acm:DeleteCertificate"
+          ],
+          "Resource": [
+            "arn:aws:acm:eu-central-1:${account_id}:certificate/*",
+            "arn:aws:acm:eu-north-1:${account_id}:certificate/*"
+          ]
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": ["eks:*"],
+          "Resource": [
+            "arn:aws:eks:eu-central-1:${account_id}:*",
+            "arn:aws:eks:eu-north-1:${account_id}:*"
+          ]
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": [
+            "es:CreateElasticsearchDomain",
+            "es:DescribeElasticsearchDomain",
+            "es:DeleteElasticsearchDomain",
+            "es:DescribeDomain",
+            "es:DescribeDomainConfig",
+            "es:DescribeElasticsearchDomainConfig",
+            "es:ListTags",
+            "es:DeleteDomain"
+          ],
+          "Resource": [
+            "arn:aws:es:eu-central-1:${account_id}:domain/*",
+            "arn:aws:sts::${account_id}:assumed-role/terragrunt/*"
+          ]
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": [
+            "kms:TagResource",
+            "kms:DescribeKey",
+            "kms:GenerateDataKey",
+            "kms:CreateGrant",
+            "kms:CreateKey",
+            "kms:CreateAlias",
+            "kms:ListAliases",
+            "kms:DeleteAlias",
+            "kms:Encrypt",
+            "kms:Decrypt",
+            "kms:UpdateAlias"
+          ],
+          "Resource": "*"
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+            "logs:DescribeLogStreams",
+            "logs:CreateLogGroup",
+            "logs:DescribeLogGroups",
+            "logs:ListTagsLogGroup",
+            "logs:TagResource",
+            "logs:DeleteLogGroup",
+            "logs:PutRetentionPolicy",
+            "logs:TagLogGroup"
+          ],
+          "Resource": [
+            "arn:aws:logs:eu-central-1:${account_id}:*",
+            "arn:aws:logs:eu-central-1:${account_id}:log-group:/aws/eks/dev-powerdnow/cluster:log-stream",
+            "arn:aws:logs:eu-central-1:${account_id}:log-group:/aws/eks/dev-vlabs/cluster:log-stream",
+            "arn:aws:logs:eu-north-1:${account_id}:*",
+            "arn:aws:logs:eu-north-1:${account_id}:log-group:/aws/eks/dev-powerdnow/cluster:log-stream",
+            "arn:aws:logs:eu-north-1:${account_id}:log-group:/aws/eks/dev-vlabs/cluster:log-stream"
+          ]
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iam:CreatePolicy",
+            "iam:DeletePolicy",
+            "iam:UntagPolicy",
+            "iam:GetPolicy",
+            "iam:GetPolicyVersion",
+            "iam:TagPolicy",
+            "iam:ListPolicyVersions",
+            "iam:CreatePolicyVersion",
+            "iam:DeletePolicyVersion"
+          ],
+          "Resource": ["arn:aws:iam::${account_id}:policy/*"]
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iam:CreateRole",
+            "iam:DeleteRole",
+            "iam:PassRole",
+            "iam:GetRole",
+            "iam:ListRolePolicies",
+            "iam:ListAttachedRolePolicies",
+            "iam:TagRole",
+            "iam:UntagRole",
+            "iam:CreateServiceLinkedRole",
+            "iam:AttachRolePolicy",
+            "iam:ListInstanceProfilesForRole",
+            "iam:DetachRolePolicy",
+            "iam:PassRole",
+            "iam:PutRolePolicy",
+            "iam:GetRolePolicy",
+            "iam:CreateOpenIDConnectProvider",
+            "iam:DeleteRolePolicy",
+            "iam:TagOpenIDConnectProvider",
+            "iam:GetOpenIDConnectProvider",
+            "iam:DeleteOpenIDConnectProvider",
+            "iam:UpdateAssumeRolePolicy",
+            "iam:CreateInstanceProfile",
+            "iam:TagInstanceProfile",
+            "iam:GetInstanceProfile",
+            "iam:DeleteInstanceProfile",
+            "iam:RemoveRoleFromInstanceProfile",
+            "iam:AddRoleToInstanceProfile",
+            "iam:DeleteServiceLinkedRole",
+            "iam:GetServiceLinkedRoleDeletionStatus"
+          ],
+          "Resource": [
+            "arn:aws:iam::${account_id}:role/*",
+            "arn:aws:iam::${account_id}:oidc-provider/*",
+            "arn:aws:iam::${account_id}:instance-profile/*"
+          ]
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": ["s3:*"],
+          "Resource": "*"
+        },
+
+        {
+          "Effect": "Allow",
+          "Action": [
+            "secretsmanager:CreateSecret",
+            "secretsmanager:RotateSecret",
+            "secretsmanager:TagResource"
+          ],
+          "Resource": "*"
+        }
+      ]
+    },
+    "managed": [
+      "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
+      "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+      "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess",
+      "arn:aws:iam::aws:policy/CloudFrontFullAccess",
+      "arn:aws:iam::aws:policy/IAMFullAccess",
+      "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+      "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+      "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+      "arn:aws:iam::aws:policy/AmazonMQFullAccess",
+      "arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess"
+    ]
+  }
+}
