@@ -44,9 +44,6 @@ unit "vpc" {
   }
 }
 
-
-
-
 unit "kms" {
   source = "../../../../../units/kms"
   path   = "kms"
@@ -91,6 +88,22 @@ unit "eks" {
     tags = {
       Name    = "${local.env}-eks"
       EKSMode = "Managed"
+    }
+  }
+}
+
+unit "aws-lbc" {
+  source = "../../../../../units/aws-lbc"
+  path   = "aws-lbc"
+
+  values = {
+    eks_path = "../eks"
+    vpc_path = "../vpc"
+
+    enable_aws_load_balancer_controller = true
+
+    tags = {
+      Name    = "${local.project}-${local.env}-aws-lbc"
     }
   }
 }

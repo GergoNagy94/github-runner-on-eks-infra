@@ -8,9 +8,7 @@
         {
           "Effect": "Allow",
           "Principal": {
-            "AWS": [
-              "arn:aws:iam::${account_id}:root"
-            ],
+            "AWS": ["arn:aws:iam::${account_id}:root"],
             "Service": "vpc-flow-logs.amazonaws.com"
           },
           "Action": "sts:AssumeRole"
@@ -43,7 +41,15 @@
             "arn:aws:eks:eu-north-1:${account_id}:*"
           ]
         },
-
+        {
+          "Effect": "Allow",
+          "Action": [
+            "cloudformation:*",
+            "cloudformation:DescribeStacks",
+            "cloudformation:DeleteStack"
+          ],
+          "Resource": "*"
+        },
         {
           "Effect": "Allow",
           "Action": [
