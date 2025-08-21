@@ -100,7 +100,7 @@ unit "aws-lbc" {
     eks_path = "../eks"
     vpc_path = "../vpc"
 
-    enable_aws_load_balancer_controller = true
+    create = true
 
     tags = {
       Name    = "${local.project}-${local.env}-aws-lbc"

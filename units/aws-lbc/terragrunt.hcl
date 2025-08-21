@@ -26,13 +26,13 @@ dependency "vpc" {
 generate "helm_provider" {
   path      = "helm_provider.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 data "aws_eks_cluster" "cluster" {
-  name = var.cluster_name
+  name = "${dependency.eks.outputs.cluster_name}"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
+  name = "${dependency.eks.outputs.cluster_name}"
 }
 
 provider "helm" {
@@ -52,30 +52,33 @@ EOF
 }
 
 inputs = {
-  create = true
-  
-  helm_config = {
-    name       = "aws-load-balancer-controller"
-    chart      = "aws-load-balancer-controller"
-    repository = "https://aws.github.io/eks-charts"
-    version    = "1.8.1"
-    namespace  = "kube-system"
-    
-    set = [
-      {
-        name  = "clusterName"
-        value = dependency.eks.outputs.cluster_name
-      },
-      {
-        name  = "vpcId"
-        value = dependency.vpc.outputs.vpc_id
-      }
-    ]
+  create = values.create
+
+  name       = "aws-load-balancer-controller"
+  chart      = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  version    = "1.8.1"
+  namespace  = "kube-system"
+
+  repository_opts = {
+    username = null
+    password = null
   }
-  
+
+  set = [
+    {
+      name  = "clusterName"
+      value = dependency.eks.outputs.cluster_name
+    },
+    {
+      name  = "vpcId"
+      value = dependency.vpc.outputs.vpc_id
+    }
+  ]
+
   oidc_providers = {
     this = {
-      provider_arn = dependency.eks.outputs.oidc_provider_arn
+      provider_arn               = dependency.eks.outputs.oidc_provider_arn
       namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
     }
   }
