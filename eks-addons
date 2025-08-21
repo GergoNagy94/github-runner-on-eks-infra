@@ -1,24 +1,4 @@
 
-unit "ebs_csi_driver" {
-  source = "../../../../../units/ebs-csi-driver"
-  path   = "ebs-csi-driver"
-
-  values = {
-    eks_path = "../eks"
-    kms_path = "../kms"
-
-    role_name                  = "ebs-csi-driver-role"
-    namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-
-    enable_kms_encryption = true
-
-    tags = {
-      Name        = "ebs-csi-driver-role"
-      Purpose     = "EBS-CSI-Driver"
-    }
-  }
-}
-
 unit "aws_load_balancer_controller" {
   source = "../../../../../units/aws-lbc"
   path   = "aws-load-balancer-controller"

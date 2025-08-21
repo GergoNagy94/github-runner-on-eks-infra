@@ -33,13 +33,13 @@ unit "vpc" {
     create_flow_log_cloudwatch_iam_role  = false
     create_flow_log_cloudwatch_log_group = false
 
-    
+
     cluster_name = "${local.project}-${local.env}-cluster"
-    
-    
+
+
     tags = {
-      Name        = "${local.project}-${local.env}-vpc"
-      ManagedBy   = "Terragrunt"
+      Name      = "${local.project}-${local.env}-vpc"
+      ManagedBy = "Terragrunt"
     }
   }
 }
@@ -63,8 +63,8 @@ unit "kms" {
     deletion_window_in_days = 7
 
     tags = {
-      Name        = "eks-cluster-kms-key"
-      Purpose     = "EKS-Encryption"
+      Name    = "eks-cluster-kms-key"
+      Purpose = "EKS-Encryption"
     }
   }
 }
@@ -77,7 +77,7 @@ unit "eks" {
     vpc_path = "../vpc"
     kms_path = "../kms"
 
-    name               = "${local.project}-${local.env}-eks"
+    name               = "${local.env}-eks"
     kubernetes_version = "1.33"
 
     endpoint_public_access                   = true
@@ -89,8 +89,8 @@ unit "eks" {
     desired_size   = 2
 
     tags = {
-      Name        = "${local.project}-${local.env}-eks"
-      EKSMode     = "Managed"
+      Name    = "${local.env}-eks"
+      EKSMode = "Managed"
     }
   }
 }

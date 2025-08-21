@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "git::git@github.com:terraform-aws-modules/terraform-aws-eks?ref=v20.37.1"
+  source = "git::git@github.com:terraform-aws-modules/terraform-aws-eks?ref=v21.1.0"
 }
 
 dependency "vpc" {
@@ -17,7 +17,6 @@ dependency "vpc" {
 
 dependency "kms" {
   config_path  = values.kms_path
-  skip_outputs = try(values.enable_kms_encryption, false) ? false : true
   mock_outputs = {
     key_arn = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
   }
@@ -65,20 +64,6 @@ inputs = {
   }
 
   authentication_mode = "API"
-
-  access_entries = {
-    admin = {
-      principal_arn = "arn:aws:iam::${local.development_account_id}:role/terragrunt-execution-role"
-      policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
 
   tags = try(values.tags, {
     Name = "${local.project}-${local.env}-eks"
