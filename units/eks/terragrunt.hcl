@@ -24,84 +24,63 @@ dependency "kms" {
 }
 
 inputs = {
-  cluster_name    = values.cluster_name
-  cluster_version = try(values.cluster_version, "1.31")
+  name               = values.name
+  kubernetes_version = values.kubernetes_version
 
-  bootstrap_self_managed_addons = try(values.bootstrap_self_managed_addons, true)
+  addons = {
+    coredns = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      before_compute = true
+    }
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+  }
 
-  cluster_endpoint_public_access       = try(values.cluster_endpoint_public_access, true)
-  cluster_endpoint_private_access      = try(values.cluster_endpoint_private_access, true)
-  cluster_endpoint_public_access_cidrs = try(values.cluster_endpoint_public_access_cidrs, ["0.0.0.0/0"])
+  cluster_encryption_config = {
+    provider_key_arn = dependency.kms.outputs.key_arn
+    resources        = ["secrets"]
+  }
+
+  endpoint_public_access                   = values.endpoint_public_access
+  enable_cluster_creator_admin_permissions = values.enable_cluster_creator_admin_permissions
 
   vpc_id                   = dependency.vpc.outputs.vpc_id
   subnet_ids               = dependency.vpc.outputs.private_subnets
   control_plane_subnet_ids = dependency.vpc.outputs.private_subnets
 
-  cluster_encryption_config = try(values.enable_kms_encryption, false) ? {
-    provider_key_arn = dependency.kms.outputs.key_arn
-    resources        = ["secrets"]
-  } : {
-    provider_key_arn = null
-    resources        = []
+  eks_managed_node_groups = {
+    example = {
+      ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = values.instance_types
+
+      min_size     = values.min_size
+      max_size     = values.max_size
+      desired_size = values.desired_size
+    }
   }
 
-  authentication_mode = try(values.authentication_mode, "API_AND_CONFIG_MAP")
+  authentication_mode = "API"
 
-  access_entries = try(values.access_entries, {})
-
-  enable_irsa = try(values.enable_irsa, true)
-
-  cluster_enabled_log_types              = try(values.cluster_enabled_log_types, ["api", "audit", "authenticator", "controllerManager", "scheduler"])
-  cloudwatch_log_group_retention_in_days = try(values.cloudwatch_log_group_retention_in_days, 14)
-  create_cloudwatch_log_group            = try(values.create_cloudwatch_log_group, true)
-
-  eks_managed_node_groups = try(values.enable_auto_mode, true) ? {} : try(values.eks_managed_node_groups, {
-    default = {
-      min_size       = 1
-      max_size       = 3
-      desired_size   = 2
-      instance_types = ["t3.medium"]
-
-      labels = {
-        Environment = "development"
-        NodeGroup   = "default"
+  access_entries = {
+    admin = {
+      principal_arn = "arn:aws:iam::${local.development_account_id}:role/terragrunt-execution-role"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
       }
     }
+  }
+
+  tags = try(values.tags, {
+    Name = "${local.project}-${local.env}-eks"
   })
-
-  cluster_addons = try(values.enable_auto_mode, true) ? {
-    coredns = {
-      preserve    = true
-      most_recent = true
-    }
-    eks-pod-identity-agent = {
-      preserve    = true
-      most_recent = true
-    }
-    kube-proxy = {
-      preserve    = true
-      most_recent = true
-    }
-    vpc-cni = {
-      preserve    = true
-      most_recent = true
-    }
-  } : try(values.cluster_addons, {})
-
-  compute_config = try(values.enable_auto_mode, true) ? {
-    enabled       = true
-    node_pools    = try(values.node_pools, ["general-purpose"])
-    node_role_arn = try(values.node_role_arn, null)
-  } : null
-
-  storage_config = try(values.enable_auto_mode, true) ? {
-    block_storage = {
-      enabled = true
-    }
-  } : null
-
-  cluster_security_group_additional_rules = try(values.cluster_security_group_additional_rules, {})
-  node_security_group_additional_rules    = try(values.node_security_group_additional_rules, {})
-
-  tags = try(values.tags, {})
 }
