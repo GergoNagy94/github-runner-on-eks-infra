@@ -80,7 +80,7 @@ unit "eks" {
     endpoint_public_access                   = true
     enable_cluster_creator_admin_permissions = true
 
-    instance_types = ["m3.medium"]
+    instance_types = ["t3.micro"]
     min_size       = 1
     max_size       = 3
     desired_size   = 2
@@ -97,13 +97,13 @@ unit "aws-lbc" {
   path   = "aws-lbc"
 
   values = {
+    create = true
+
     eks_path = "../eks"
     vpc_path = "../vpc"
 
-    create = true
-
     tags = {
-      Name    = "${local.project}-${local.env}-aws-lbc"
+      Name = "${local.project}-${local.env}-aws-lbc"
     }
   }
 }
