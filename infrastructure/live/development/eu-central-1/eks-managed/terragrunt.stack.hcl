@@ -93,6 +93,19 @@ unit "eks" {
             }
           }
         }
+      },
+      gellert_admin = {
+        principal_arn = "arn:aws:iam::555458747175:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_18d3e6876e41f66a"
+
+        policy_associations = {
+          admin = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+            access_scope = {
+              namespace = []
+              type      = "cluster"
+            }
+          }
+        }
       }
     }
 
