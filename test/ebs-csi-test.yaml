@@ -1,0 +1,43 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-gp3-sc
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  fsType: ext4
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ebs-test-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ebs-gp3-sc
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ebs-test-pod
+spec:
+  containers:
+  - name: app
+    image: nginx:latest
+    volumeMounts:
+    - name: persistent-storage
+      mountPath: /data
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo $(date) >> /data/test.log; sleep 30; done"]
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: ebs-test-pvc

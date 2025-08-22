@@ -80,6 +80,22 @@ unit "eks" {
     endpoint_public_access                   = true
     enable_cluster_creator_admin_permissions = true
 
+    access_entries = {
+      test = {
+        principal_arn = "arn:aws:iam::567749996660:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_6d73bc836f311973"
+
+        policy_associations = {
+          admin = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+            access_scope = {
+              namespace = []
+              type      = "cluster"
+            }
+          }
+        }
+      }
+    }
+
     instance_types = ["t3.medium"]
     min_size       = 1
     max_size       = 3
