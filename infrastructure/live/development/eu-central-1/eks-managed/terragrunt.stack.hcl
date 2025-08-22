@@ -80,7 +80,7 @@ unit "eks" {
     endpoint_public_access                   = true
     enable_cluster_creator_admin_permissions = true
 
-    instance_types = ["t3.micro"]
+    instance_types = ["t3.medium"]
     min_size       = 1
     max_size       = 3
     desired_size   = 2
