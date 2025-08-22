@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "git::git@github.com:aws-ia/terraform-aws-eks-blueprints-addon?ref=v1.1.1"
+  source = "git::git@github.com:aws-ia/terraform-aws-eks-blueprints-addons?ref=v1.22.0"
 }
 
 dependency "eks" {
@@ -41,6 +41,9 @@ provider "helm" {
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
     token                  = data.aws_eks_cluster_auth.cluster.token
   }
+
+  repository_config_path = "./.helm/repositories.yaml"
+  repository_cache       = "./.helm"
 }
 
 provider "kubernetes" {
@@ -52,30 +55,25 @@ EOF
 }
 
 inputs = {
-  create = values.create
+  enable_aws_load_balancer_controller = values.enable_aws_load_balancer_controller
 
-  name       = "aws-load-balancer-controller"
-  chart      = "aws-load-balancer-controller"
-  repository = "https://aws.github.io/eks-charts"
-  version    = "1.8.1"
-  namespace  = "kube-system"
+  cluster_name      = dependency.eks.outputs.cluster_name
+  cluster_endpoint  = dependency.eks.outputs.cluster_endpoint
+  cluster_version   = dependency.eks.outputs.cluster_version
+  oidc_provider_arn = dependency.eks.outputs.oidc_provider_arn
 
-  set = [
-    {
-      name  = "clusterName"
-      value = dependency.eks.outputs.cluster_name
-    },
-    {
-      name  = "vpcId"
-      value = dependency.vpc.outputs.vpc_id
-    }
-  ]
-
-  oidc_providers = {
-    this = {
-      provider_arn               = dependency.eks.outputs.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
-    }
+  aws_load_balancer_controller = {
+    chart_version = "1.8.1"
+    set = [
+      {
+        name  = "clusterName"
+        value = dependency.eks.outputs.cluster_name
+      },
+      {
+        name  = "vpcId"
+        value = dependency.vpc.outputs.vpc_id
+      }
+    ]
   }
 
   tags = try(values.tags, {

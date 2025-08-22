@@ -97,7 +97,7 @@ unit "aws-lbc" {
   path   = "aws-lbc"
 
   values = {
-    create = true
+    enable_aws_load_balancer_controller = true
 
     eks_path = "../eks"
     vpc_path = "../vpc"
