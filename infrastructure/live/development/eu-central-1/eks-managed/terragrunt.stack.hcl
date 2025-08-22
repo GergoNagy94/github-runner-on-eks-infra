@@ -66,6 +66,16 @@ unit "kms" {
   }
 }
 
+unit "cross-account-role-gellert" {
+  source = "../../../../../units/cross-account-role"
+  path = "cross-account-role-gellert"
+
+  values = {
+    trusted_account_arn = "arn:aws:iam::555458747175:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_18d3e6876e41f66a"
+    eks_cross_account_role_name = "gellert-eks-cross-account-access"
+  }
+}
+
 unit "eks" {
   source = "../../../../../units/eks"
   path   = "eks"
@@ -94,8 +104,8 @@ unit "eks" {
           }
         }
       },
-      gellert_admin = {
-        principal_arn = "arn:aws:iam::555458747175:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_18d3e6876e41f66a"
+      cross-accoount = {
+        principal_arn = "arn:aws:iam::567749996660:role/gellert-eks-cross-account-access"
 
         policy_associations = {
           admin = {

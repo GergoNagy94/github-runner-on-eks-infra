@@ -1,5 +1,5 @@
 resource "aws_iam_role" "eks_cross_account" {
-  name = "eks-cross-account-access"
+  name = var.eks_cross_account_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -8,7 +8,7 @@ resource "aws_iam_role" "eks_cross_account" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          AWS = var.principal_arn
+          AWS = var.trusted_account_arn
         }
       }
     ]
