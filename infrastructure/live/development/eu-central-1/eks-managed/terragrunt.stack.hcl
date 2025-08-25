@@ -136,15 +136,32 @@ unit "ebs-irsa" {
   path   = "ebs-irsa"
 
   values = {
-    eks_path  = "../eks"
+    eks_path = "../eks"
 
-    role_name = "${local.project}-${local.env}-ebs-irsa"
+    role_name                  = "${local.project}-${local.env}-ebs-irsa"
     namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
 
-    attach_ebs_csi_policy                      = true
+    attach_ebs_csi_policy = true
 
     tags = {
       Name = "${local.project}-${local.env}-irsa-role"
+    }
+  }
+}
+
+unit "ebs-csi-addon" {
+  source = "../../../../../units/eks-addon"
+  path   = "ebs-csi-addon"
+
+  values = {
+    eks_path = "../eks"
+    irsa_path = "../ebs-irsa"
+
+    addon_name    = "aws-ebs-csi-driver"
+    addon_version = "v1.48.0-eksbuild.1"
+
+    tags = {
+      Name = "${local.project}-${local.env}-ebs-csi-addon"
     }
   }
 }
