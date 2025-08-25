@@ -34,7 +34,7 @@ unit "vpc" {
     create_flow_log_cloudwatch_log_group = false
 
 
-    cluster_name = "${local.project}-${local.env}-cluster"
+    cluster_name = "${local.env}-eks"
 
 
     tags = {
