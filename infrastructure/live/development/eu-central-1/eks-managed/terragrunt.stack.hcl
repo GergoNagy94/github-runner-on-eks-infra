@@ -68,10 +68,10 @@ unit "kms" {
 
 unit "cross-account-role-gellert" {
   source = "../../../../../units/cross-account-role"
-  path = "cross-account-role-gellert"
+  path   = "cross-account-role-gellert"
 
   values = {
-    trusted_account_arn = "arn:aws:iam::555458747175:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_18d3e6876e41f66a"
+    trusted_account_arn         = "arn:aws:iam::555458747175:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_AdminAccess_18d3e6876e41f66a"
     eks_cross_account_role_name = "gellert-eks-cross-account-access"
   }
 }
@@ -127,6 +127,24 @@ unit "eks" {
     tags = {
       Name    = "${local.env}-eks"
       EKSMode = "Managed"
+    }
+  }
+}
+
+unit "ebs-irsa" {
+  source = "../../../../../units/iam-role"
+  path   = "ebs-irsa"
+
+  values = {
+    eks_path  = "../eks"
+
+    role_name = "${local.project}-${local.env}-ebs-irsa"
+    namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+
+    attach_ebs_csi_policy                      = true
+
+    tags = {
+      Name = "${local.project}-${local.env}-irsa-role"
     }
   }
 }
